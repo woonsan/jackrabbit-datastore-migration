@@ -16,11 +16,9 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.sql.DataSource;
 
+import org.apache.jackrabbit.core.data.DataRecord;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -29,11 +27,6 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
-import org.springframework.batch.item.support.ListItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,31 +44,23 @@ public class BatchConfiguration {
     @Autowired
     public DataSource dataSource;
 
-    @Bean
-    public ItemReader<String> reader() {
-        List<String> list = new LinkedList<>();
-        for (int i = 0; i < 25; i++) {
-            list.add("Hello-" + i);
-        }
+    @Autowired
+    public DataStoreFactory dataStoreFactory;
 
-        ListItemReader<String> reader = new ListItemReader<>(list);
-        return reader;
+    @Autowired
+    public SourceDataStoreConfiguration sourceDataStoreConfiguration;
+
+    @Autowired
+    public TargetDataStoreConfiguration targetDataStoreConfiguration;
+
+    @Bean
+    public DataRecordReader dataRecordReader() {
+        return new DataRecordReader(dataStoreFactory.get(sourceDataStoreConfiguration));
     }
 
     @Bean
-    public ItemProcessor<String, String> processor() {
-        return new ItemProcessor<String, String>() {
-            @Override
-            public String process(String item) throws Exception {
-                return "[Processed ] " + item;
-            }
-        };
-    }
-
-    @Bean
-    public ItemWriter<String> writer() {
-        ListItemWriter<String> writer = new ListItemWriter<>();
-        return writer;
+    public DataRecordWriter dataRecordWriter() {
+        return new DataRecordWriter(dataStoreFactory.get(targetDataStoreConfiguration));
     }
 
     @Bean
@@ -84,13 +69,13 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public EntryItemListener itemListener() {
-        return new EntryItemListener();
+    public DataRecordItemListener dataRecordItemListener() {
+        return new DataRecordItemListener();
     }
 
     @Bean
-    public Job testJob() {
-        return jobBuilderFactory.get("testJob")
+    public Job migrationJob() {
+        return jobBuilderFactory.get("migrationJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(jobExecutionListener())
                 .flow(step1())
@@ -101,11 +86,10 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<String, String> chunk(10)
-                .reader(reader())
-                .processor(processor())
-                .writer(writer())
-                .listener((ItemWriteListener<String>) itemListener())
+                .<DataRecord, DataRecord> chunk(10)
+                .reader(dataRecordReader())
+                .writer(dataRecordWriter())
+                .listener((ItemWriteListener<DataRecord>) dataRecordItemListener())
                 .build();
     }
 }

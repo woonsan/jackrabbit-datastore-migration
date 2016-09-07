@@ -17,7 +17,9 @@
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
 @ConfigurationProperties(prefix="target.dataStore")
 public class TargetDataStoreConfiguration extends DataStoreConfiguration {
 

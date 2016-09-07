@@ -16,16 +16,27 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import java.util.Map;
+import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class DataStoreConfiguration {
 
-    @Value("${class}")
+    private String homeDir;
+
     private String className;
 
-    private Map<String, String> params;
+    private Properties params;
+
+    public String getHomeDir() {
+        return homeDir;
+    }
+
+    public void setHomeDir(String homeDir) {
+        this.homeDir = homeDir;
+    }
 
     public String getClassName() {
         return className;
@@ -35,12 +46,50 @@ public class DataStoreConfiguration {
         this.className = className;
     }
 
-    public Map<String, String> getParams() {
+    public Properties getParams() {
         return params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public void setParams(Properties params) {
         this.params = params;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof DataStoreConfiguration)) {
+            return false;
+        }
+
+        DataStoreConfiguration that = (DataStoreConfiguration) o;
+
+        return new EqualsBuilder()
+                .append(this.homeDir, that.homeDir)
+                .append(this.className, that.className)
+                .append(this.params, that.params)
+                .build()
+                .booleanValue();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(homeDir)
+                .append(className)
+                .append(params)
+                .build()
+                .intValue();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("homeDir", homeDir)
+                .append("className", className)
+                .append("params", params)
+                .build();
+    }
 }

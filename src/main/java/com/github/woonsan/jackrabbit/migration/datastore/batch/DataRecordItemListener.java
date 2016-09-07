@@ -16,19 +16,28 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jackrabbit.core.data.DataIdentifier;
+import org.apache.jackrabbit.core.data.DataRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.listener.ItemListenerSupport;
 
-public class EntryItemListener extends ItemListenerSupport<String, String> {
+public class DataRecordItemListener extends ItemListenerSupport<DataRecord, DataRecord> {
 
     private static Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
 
     @Override
-    public void afterWrite(List<? extends String> items) {
-        log.info("Has written: {}", items);
+    public void afterWrite(List<? extends DataRecord> items) {
+        List<DataIdentifier> identifiers = new ArrayList<>(items.size());
+
+        for (DataRecord record : items) {
+            identifiers.add(record.getIdentifier());
+        }
+
+        log.debug("Written data records: {}", identifiers);
     }
 
 }

@@ -13,3 +13,23 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+logging:
+    level:
+        root: 'INFO'
+        com.github.woonsan.jackrabbit.migration.datastore: 'DEBUG'
+
+source:
+    dataStore:
+        homeDir: target
+        className: org.apache.jackrabbit.core.data.FileDataStore
+        params:
+            path: target/storage/source/datastore
+            minRecordLength: 1024
+
+target:
+    dataStore:
+        homeDir: target
+        className: org.apache.jackrabbit.core.data.FileDataStore
+        params:
+            path: target/storage/target/datastore
+            minRecordLength: 1024
