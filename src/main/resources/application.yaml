@@ -15,21 +15,21 @@
 
 logging:
     level:
-        root: 'INFO'
+        root: 'WARN'
         com.github.woonsan.jackrabbit.migration.datastore: 'DEBUG'
 
 source:
     dataStore:
-        homeDir: target
-        className: org.apache.jackrabbit.core.data.FileDataStore
+        homeDir: 'target/test-classes'
+        className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:
-            path: target/storage/source/datastore
-            minRecordLength: 1024
+            path: 'target/test-classes/repository/datastore'
+            minRecordLength: '1024'
 
 target:
     dataStore:
-        homeDir: target
-        className: org.apache.jackrabbit.core.data.FileDataStore
+        homeDir: 'target/storage'
+        className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:
-            path: target/storage/target/datastore
-            minRecordLength: 1024
+            path: 'target/storage/repository/datastore'
+            minRecordLength: '1024'

@@ -21,9 +21,7 @@ import java.util.Properties;
 import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.core.config.BeanConfig;
-import org.apache.jackrabbit.core.config.BeanFactory;
 import org.apache.jackrabbit.core.config.ConfigurationException;
-import org.apache.jackrabbit.core.config.SimpleBeanFactory;
 import org.apache.jackrabbit.core.data.DataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +32,6 @@ public class DataStoreFactory {
 
     private static Logger log = LoggerFactory.getLogger(DataStoreFactory.class);
 
-    private BeanFactory beanFactory = new SimpleBeanFactory();
-
     public DataStore get(final DataStoreConfiguration dataStoreConfiguration) {
         log.debug("dataStoreConfiguration: {}", dataStoreConfiguration);
 
@@ -44,18 +40,17 @@ public class DataStoreFactory {
         try {
             String homeDir = dataStoreConfiguration.getHomeDir();
             String className = dataStoreConfiguration.getClassName();
-            Class<?> clazz = Class.forName(className);
             Properties params = dataStoreConfiguration.getParams();
+            log.debug("params: {}", params);
             BeanConfig beanConfig = new BeanConfig(className, params);
-            dataStore = (DataStore) beanFactory.newInstance(clazz, beanConfig);
+            log.debug("beanConfig.params: {}", beanConfig.getParameters());
+            dataStore = beanConfig.newInstance(DataStore.class);
             log.debug("dataStore: {}", dataStore);
             dataStore.init(homeDir);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e.toString());
         } catch (ConfigurationException e) {
-            throw new RuntimeException(e.toString());
+            throw new RuntimeException(e.toString(), e);
         } catch (RepositoryException e) {
-            throw new RuntimeException(e.toString());
+            throw new RuntimeException(e.toString(), e);
         }
 
         return dataStore;
