@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.woonsan;
+package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import java.util.List;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class JackrabbitDatastoreMigrationApplicationTests {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.listener.ItemListenerSupport;
 
-    @Test
-    public void contextLoads() {
+public class EntryItemListener extends ItemListenerSupport<String, String> {
+
+    private static Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
+
+    @Override
+    public void afterWrite(List<? extends String> items) {
+        log.info("Has written: {}", items);
     }
 
 }

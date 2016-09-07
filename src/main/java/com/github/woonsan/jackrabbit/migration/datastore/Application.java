@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.woonsan;
+package com.github.woonsan.jackrabbit.migration.datastore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JackrabbitDatastoreMigrationApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(JackrabbitDatastoreMigrationApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
