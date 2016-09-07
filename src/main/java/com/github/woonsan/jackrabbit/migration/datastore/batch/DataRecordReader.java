@@ -44,21 +44,20 @@ public class DataRecordReader implements ItemReader<DataRecord> {
     @Override
     public DataRecord read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         Iterator<DataIdentifier> idIt = getIdentifierIterator();
-        log.debug("idIt: {}", idIt);
 
         if (idIt != null) {
-            if (!idIt.hasNext()) {
-                log.debug("No id found from dataStore.");
-            }
-
             DataIdentifier id;
             DataRecord record;
 
             while (idIt.hasNext()) {
                 id = idIt.next();
-                log.debug("idIt has next. Id: {}", id);
-                record = dataStore.getRecord(id);
-                log.debug("record: {}", record);
+                record = null;
+
+                try {
+                    record = dataStore.getRecord(id);
+                } catch (DataStoreException e) {
+                    log.warn("Data record not found: {}", id);
+                }
 
                 if (record != null) {
                     return record;

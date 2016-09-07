@@ -19,6 +19,7 @@ package com.github.woonsan.jackrabbit.migration.datastore.batch;
 import javax.sql.DataSource;
 
 import org.apache.jackrabbit.core.data.DataRecord;
+import org.apache.jackrabbit.core.data.DataStore;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -53,14 +54,18 @@ public class BatchConfiguration {
     @Autowired
     public TargetDataStoreConfiguration targetDataStoreConfiguration;
 
+    private DataStore sourceDataStore;
+
+    private DataStore targetDataStore;
+
     @Bean
     public DataRecordReader dataRecordReader() {
-        return new DataRecordReader(dataStoreFactory.get(sourceDataStoreConfiguration));
+        return new DataRecordReader(getSourceDataStore());
     }
 
     @Bean
     public DataRecordWriter dataRecordWriter() {
-        return new DataRecordWriter(dataStoreFactory.get(targetDataStoreConfiguration));
+        return new DataRecordWriter(getTargetDataStore());
     }
 
     @Bean
@@ -92,4 +97,21 @@ public class BatchConfiguration {
                 .listener((ItemWriteListener<DataRecord>) dataRecordItemListener())
                 .build();
     }
+
+    private DataStore getSourceDataStore() {
+        if (sourceDataStore == null) {
+            sourceDataStore = dataStoreFactory.get(sourceDataStoreConfiguration);
+        }
+
+        return sourceDataStore;
+    }
+
+    private DataStore getTargetDataStore() {
+        if (targetDataStore == null) {
+            targetDataStore = dataStoreFactory.get(targetDataStoreConfiguration);
+        }
+
+        return targetDataStore;
+    }
+
 }

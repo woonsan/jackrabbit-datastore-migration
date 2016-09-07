@@ -37,7 +37,7 @@ public class DataRecordItemListener extends ItemListenerSupport<DataRecord, Data
             identifiers.add(record.getIdentifier());
         }
 
-        log.debug("Written data records: {}", identifiers);
+        log.debug("Has written data records: {}", identifiers);
     }
 
 }

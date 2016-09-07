@@ -41,9 +41,7 @@ public class DataStoreFactory {
             String homeDir = dataStoreConfiguration.getHomeDir();
             String className = dataStoreConfiguration.getClassName();
             Properties params = dataStoreConfiguration.getParams();
-            log.debug("params: {}", params);
             BeanConfig beanConfig = new BeanConfig(className, params);
-            log.debug("beanConfig.params: {}", beanConfig.getParameters());
             dataStore = beanConfig.newInstance(DataStore.class);
             log.debug("dataStore: {}", dataStore);
             dataStore.init(homeDir);
