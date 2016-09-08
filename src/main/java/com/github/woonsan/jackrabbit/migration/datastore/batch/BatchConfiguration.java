@@ -20,6 +20,8 @@ import javax.sql.DataSource;
 
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -35,6 +37,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
+
+    private static Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
 
     @Autowired
     public JobBuilderFactory jobBuilderFactory;
@@ -113,5 +117,4 @@ public class BatchConfiguration {
 
         return targetDataStore;
     }
-
 }
