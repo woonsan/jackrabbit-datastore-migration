@@ -23,6 +23,7 @@ import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.core.config.BeanConfig;
 import org.apache.jackrabbit.core.config.ConfigurationException;
 import org.apache.jackrabbit.core.data.DataStore;
+import org.apache.jackrabbit.core.util.db.ConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -42,6 +43,7 @@ public class DataStoreFactory {
             String className = dataStoreConfiguration.getClassName();
             Properties params = dataStoreConfiguration.getParams();
             BeanConfig beanConfig = new BeanConfig(className, params);
+            beanConfig.setConnectionFactory(new ConnectionFactory());
             dataStore = beanConfig.newInstance(DataStore.class);
             log.debug("dataStore: {}", dataStore);
             dataStore.init(homeDir);

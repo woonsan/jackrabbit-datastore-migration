@@ -23,7 +23,6 @@ source:
         homeDir: 'target/test-classes'
         className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:
-            path: 'target/test-classes/repository/datastore'
             minRecordLength: '1024'
 
 target:
@@ -31,5 +30,4 @@ target:
         homeDir: 'target/storage'
         className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:
-            path: 'target/storage/repository/datastore'
             minRecordLength: '1024'

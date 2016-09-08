@@ -20,16 +20,25 @@ logging:
 
 source:
     dataStore:
-        homeDir: 'target/test-classes'
-        className: 'org.apache.jackrabbit.core.data.FileDataStore'
+        homeDir: 'target/storage-db'
+        className: 'org.apache.jackrabbit.core.data.db.DbDataStore'
         params:
-            path: 'target/test-classes/repository/datastore'
+            url: 'jdbc:mysql://localhost:3306/repodb?autoReconnect=true&characterEncoding=utf8'
+            user: 'tester'
+            password: 'secret'
+            driver: 'com.mysql.jdbc.Driver'
+            databaseType: 'mysql'
             minRecordLength: '1024'
+            maxConnections: '5'
+            copyWhenReading: 'true'
+            tablePrefix: ''
+            schemaObjectPrefix: ''
+            schemaCheckEnabled: 'false'
 
 target:
     dataStore:
-        homeDir: 'target/storage2'
-        className: 'org.apache.jackrabbit.core.data.FileDataStore'
+        homeDir: 'target/storage-vfs'
+        className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
-            path: 'target/storage2/repository/datastore'
+            baseFolderUri: 'file://./target/storage-vfs/repository/datastore'
             minRecordLength: '1024'
