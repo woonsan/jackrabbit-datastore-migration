@@ -26,8 +26,8 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>jackrabbit-datastore-migration</name>
-  <description>Demo project for Spring Boot</description>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>DataStore migration tool for Apache Jackrabbit</description>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -37,11 +37,54 @@
   </parent>
 
   <properties>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.7</java.version>
+
     <jackrabbit.version>2.13.2</jackrabbit.version>
+
+    <jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
+    <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
+
   </properties>
+
+  <scm>
+    <connection>scm:git:https://github.com/woonsan/jackrabbit-datastore-migration</connection>
+    <developerConnection>scm:git:https://github.com/woonsan/jackrabbit-datastore-migration</developerConnection>
+    <url>https://github.com/woonsan/jackrabbit-datastore-migration</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/woonsan/jackrabbit-datastore-migration/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Hudson</system>
+    <url>https://travis-ci.org/woonsan/jackrabbit-datastore-migration</url>
+  </ciManagement>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>woonsan</id>
+      <name>Woonsan Ko</name>
+      <email>woonsan AT apache DOT org</email>
+      <url>https://github.com/woonsan</url>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+  </developers>
 
   <dependencies>
 
@@ -119,7 +162,9 @@
   </dependencies>
 
   <build>
+
     <plugins>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -135,7 +180,31 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>${coveralls-maven-plugin.version}</version>
+      </plugin>
+      -->
+
     </plugins>
+
   </build>
 
 </project>
