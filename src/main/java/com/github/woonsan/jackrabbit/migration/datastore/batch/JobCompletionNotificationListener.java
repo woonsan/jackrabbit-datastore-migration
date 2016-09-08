@@ -28,11 +28,15 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
     private static Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
 
     @Autowired
+    private DataStoreFactory dataStoreFactory;
+
     public JobCompletionNotificationListener() {
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
+        dataStoreFactory.clear();
+
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             log.info("!!! JOB FINISHED! Time to verify the results");
         }

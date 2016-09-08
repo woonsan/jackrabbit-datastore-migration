@@ -16,13 +16,19 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
 public class DataRecordWriter implements ItemWriter<DataRecord> {
+
+    private static Logger log = LoggerFactory.getLogger(DataRecordWriter.class);
 
     private DataStore dataStore;
 
@@ -32,8 +38,25 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
 
     @Override
     public void write(List<? extends DataRecord> items) throws Exception {
+        DataRecord addedRecord;
+
         for (DataRecord record : items) {
-            dataStore.addRecord(record.getStream());
+            InputStream input = null;
+
+            try {
+                input = record.getStream();
+                addedRecord = dataStore.addRecord(input);
+                log.debug("Added record ({}) to a new record ({}).", record.getIdentifier(),
+                        addedRecord.getIdentifier());
+            } finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch (IOException e) {
+                        log.error("Error while closing input stream.", e);
+                    }
+                }
+            }
         }
     }
 

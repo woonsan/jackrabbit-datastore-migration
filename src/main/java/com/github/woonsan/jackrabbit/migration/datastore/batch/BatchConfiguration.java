@@ -16,12 +16,7 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import javax.sql.DataSource;
-
 import org.apache.jackrabbit.core.data.DataRecord;
-import org.apache.jackrabbit.core.data.DataStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
@@ -38,38 +33,29 @@ import org.springframework.context.annotation.Configuration;
 @EnableBatchProcessing
 public class BatchConfiguration {
 
-    private static Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
 
     @Autowired
-    public JobBuilderFactory jobBuilderFactory;
+    private StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public StepBuilderFactory stepBuilderFactory;
+    private DataStoreFactory dataStoreFactory;
 
     @Autowired
-    public DataSource dataSource;
+    private SourceDataStoreConfiguration sourceDataStoreConfiguration;
 
     @Autowired
-    public DataStoreFactory dataStoreFactory;
-
-    @Autowired
-    public SourceDataStoreConfiguration sourceDataStoreConfiguration;
-
-    @Autowired
-    public TargetDataStoreConfiguration targetDataStoreConfiguration;
-
-    private DataStore sourceDataStore;
-
-    private DataStore targetDataStore;
+    private TargetDataStoreConfiguration targetDataStoreConfiguration;
 
     @Bean
     public DataRecordReader dataRecordReader() {
-        return new DataRecordReader(getSourceDataStore());
+        return new DataRecordReader(dataStoreFactory.get(sourceDataStoreConfiguration));
     }
 
     @Bean
     public DataRecordWriter dataRecordWriter() {
-        return new DataRecordWriter(getTargetDataStore());
+        return new DataRecordWriter(dataStoreFactory.get(targetDataStoreConfiguration));
     }
 
     @Bean
@@ -100,21 +86,5 @@ public class BatchConfiguration {
                 .writer(dataRecordWriter())
                 .listener((ItemWriteListener<DataRecord>) dataRecordItemListener())
                 .build();
-    }
-
-    private DataStore getSourceDataStore() {
-        if (sourceDataStore == null) {
-            sourceDataStore = dataStoreFactory.get(sourceDataStoreConfiguration);
-        }
-
-        return sourceDataStore;
-    }
-
-    private DataStore getTargetDataStore() {
-        if (targetDataStore == null) {
-            targetDataStore = dataStoreFactory.get(targetDataStoreConfiguration);
-        }
-
-        return targetDataStore;
     }
 }
