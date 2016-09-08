@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jcr.RepositoryException;
 
@@ -50,6 +51,10 @@ public class MigrationJobExecutionStates {
     private volatile Map<DataIdentifier, MigrationRecordExecutionStates> executionStatesMap;
 
     private volatile Iterator<DataIdentifier> executionStatesDataIdentifiersIterator;
+
+    private AtomicInteger readCount = new AtomicInteger();
+
+    private AtomicInteger writeCount = new AtomicInteger();
 
     public long getStartedTimeMillis() {
         return startedTimeMillis;
@@ -90,30 +95,55 @@ public class MigrationJobExecutionStates {
     }
 
     public void reportReadSuccess(final DataIdentifier identifier) {
+        readCount.incrementAndGet();
         final MigrationRecordExecutionStates recordStates = executionStatesMap.get(identifier);
         recordStates.setReadSucceeded(true);
     }
 
     public void reportReadError(final DataIdentifier identifier, final String errorMessage) {
+        readCount.incrementAndGet();
         final MigrationRecordExecutionStates recordStates = executionStatesMap.get(identifier);
         recordStates.setReadSucceeded(false);
         recordStates.setReadError(errorMessage);
     }
 
     public void reportWriteSuccess(final DataIdentifier identifier) {
+        writeCount.incrementAndGet();
         final MigrationRecordExecutionStates recordStates = executionStatesMap.get(identifier);
         recordStates.setWriteSucceeded(true);
     }
 
     public void reportWriteError(final DataIdentifier identifier, final String errorMessage) {
+        writeCount.incrementAndGet();
         final MigrationRecordExecutionStates recordStates = executionStatesMap.get(identifier);
         recordStates.setWriteSucceeded(false);
         recordStates.setWriteError(errorMessage);
     }
 
+    public double getReadProgress() {
+        if (recordCount == 0) {
+            return 0.0;
+        }
+
+        return ((double) readCount.get()) / ((double) recordCount);
+    }
+
+    public double getWriteProgress() {
+        if (recordCount == 0) {
+            return 0.0;
+        }
+
+        return ((double) writeCount.get()) / ((double) recordCount);
+    }
+
     public void reset() {
         executionStatesDataIdentifiersIterator = null;
         executionStatesMap = null;
+        readCount.set(0);
+        writeCount.set(0);
+        recordCount = 0;
+        startedTimeMillis = 0L;
+        stoppedTimeMillis = 0L;
     }
 
     private Iterator<DataIdentifier> getSourceDataIdentifiers() {

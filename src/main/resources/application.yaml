@@ -16,7 +16,7 @@
 logging:
     level:
         root: 'WARN'
-        com.github.woonsan.jackrabbit.migration.datastore: 'DEBUG'
+        com.github.woonsan.jackrabbit.migration.datastore: 'INFO'
 
 source:
     dataStore:

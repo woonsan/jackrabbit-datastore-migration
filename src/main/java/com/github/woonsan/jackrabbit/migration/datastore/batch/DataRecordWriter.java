@@ -43,17 +43,15 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
 
     @Override
     public void write(List<? extends DataRecord> items) throws Exception {
-        DataRecord addedRecord;
-
         for (DataRecord record : items) {
             InputStream input = null;
 
             try {
                 input = record.getStream();
-                addedRecord = dataStore.addRecord(input);
+                dataStore.addRecord(input);
                 executionStates.reportWriteSuccess(record.getIdentifier());
-                log.debug("Added record ({}) to a new record ({}).", record.getIdentifier(),
-                        addedRecord.getIdentifier());
+                log.info("Record migrated: '{}' ({}%)", record.getIdentifier(),
+                        String.format("%2.1f", 100.0 * executionStates.getWriteProgress()));
             } catch (DataStoreException e) {
                 executionStates.reportWriteError(record.getIdentifier(), e.toString());
             } finally {
