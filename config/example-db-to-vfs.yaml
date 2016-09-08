@@ -40,5 +40,5 @@ target:
         homeDir: 'target/storage-vfs'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
-            baseFolderUri: 'file://./target/storage-vfs/repository/datastore'
+            baseFolderUri: 'file:/tmp/storage-vfs/repository/datastore'
             minRecordLength: '1024'
