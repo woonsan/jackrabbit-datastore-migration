@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.core.config.BeanConfig;
-import org.apache.jackrabbit.core.config.ConfigurationException;
 import org.apache.jackrabbit.core.data.DataStore;
 import org.apache.jackrabbit.core.data.DataStoreException;
 import org.apache.jackrabbit.core.util.db.ConnectionFactory;
@@ -38,33 +37,27 @@ public class DataStoreFactory {
 
     private Map<DataStoreConfiguration, DataStore> dataStoreMap = new ConcurrentHashMap<>();
 
-    public DataStore get(final DataStoreConfiguration dataStoreConfiguration) {
+    public synchronized DataStore getDataStore(final DataStoreConfiguration dataStoreConfiguration) throws RepositoryException {
         log.debug("dataStoreConfiguration: {}", dataStoreConfiguration);
         DataStore dataStore = dataStoreMap.get(dataStoreConfiguration);
         log.debug("dataStore retrieved from cache map.");
 
         if (dataStore == null) {
-            try {
-                String homeDir = dataStoreConfiguration.getHomeDir();
-                String className = dataStoreConfiguration.getClassName();
-                Properties params = dataStoreConfiguration.getParams();
-                BeanConfig beanConfig = new BeanConfig(className, params);
-                beanConfig.setConnectionFactory(new ConnectionFactory());
-                dataStore = beanConfig.newInstance(DataStore.class);
-                log.debug("dataStore: {}", dataStore);
-                dataStore.init(homeDir);
-                dataStoreMap.put(dataStoreConfiguration, dataStore);
-            } catch (ConfigurationException e) {
-                throw new RuntimeException(e.toString(), e);
-            } catch (RepositoryException e) {
-                throw new RuntimeException(e.toString(), e);
-            }
+            String homeDir = dataStoreConfiguration.getHomeDir();
+            String className = dataStoreConfiguration.getClassName();
+            Properties params = dataStoreConfiguration.getParams();
+            BeanConfig beanConfig = new BeanConfig(className, params);
+            beanConfig.setConnectionFactory(new ConnectionFactory());
+            dataStore = beanConfig.newInstance(DataStore.class);
+            dataStore.init(homeDir);
+            log.info("dataStore initialized: {}", dataStore);
+            dataStoreMap.put(dataStoreConfiguration, dataStore);
         }
 
         return dataStore;
     }
 
-    public void clear() {
+    public synchronized void clear() {
         for (DataStoreConfiguration config : dataStoreMap.keySet()) {
             closeDataStore(config);
         }

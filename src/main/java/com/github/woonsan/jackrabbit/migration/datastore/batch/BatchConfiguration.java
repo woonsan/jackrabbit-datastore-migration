@@ -16,6 +16,8 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
+import javax.jcr.RepositoryException;
+
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
@@ -25,6 +27,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.builder.StepBuilderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,18 +52,18 @@ public class BatchConfiguration {
     private TargetDataStoreConfiguration targetDataStoreConfiguration;
 
     @Bean
-    public DataRecordReader dataRecordReader() {
-        return new DataRecordReader(dataStoreFactory.get(sourceDataStoreConfiguration));
+    public DataRecordReader dataRecordReader() throws RepositoryException {
+        return new DataRecordReader(dataStoreFactory.getDataStore(sourceDataStoreConfiguration));
     }
 
     @Bean
-    public DataRecordWriter dataRecordWriter() {
-        return new DataRecordWriter(dataStoreFactory.get(targetDataStoreConfiguration));
+    public DataRecordWriter dataRecordWriter() throws RepositoryException {
+        return new DataRecordWriter(dataStoreFactory.getDataStore(targetDataStoreConfiguration));
     }
 
     @Bean
     public JobExecutionListener jobExecutionListener() {
-        return new JobCompletionNotificationListener();
+        return new MigrationJobExecutionListener();
     }
 
     @Bean
@@ -80,11 +83,15 @@ public class BatchConfiguration {
 
     @Bean
     public Step step1() {
-        return stepBuilderFactory.get("step1")
-                .<DataRecord, DataRecord> chunk(10)
-                .reader(dataRecordReader())
-                .writer(dataRecordWriter())
-                .listener((ItemWriteListener<DataRecord>) dataRecordItemListener())
-                .build();
+        try {
+            return stepBuilderFactory.get("step1")
+                    .<DataRecord, DataRecord> chunk(10)
+                    .reader(dataRecordReader())
+                    .writer(dataRecordWriter())
+                    .listener((ItemWriteListener<DataRecord>) dataRecordItemListener())
+                    .build();
+        } catch (RepositoryException e) {
+            throw new StepBuilderException(e);
+        }
     }
 }

@@ -16,19 +16,24 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
+import org.apache.jackrabbit.core.data.DataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DataRecordWriter implements ItemWriter<DataRecord> {
 
     private static Logger log = LoggerFactory.getLogger(DataRecordWriter.class);
+
+    @Autowired
+    private MigrationJobExecutionStates executionStates;
 
     private DataStore dataStore;
 
@@ -46,16 +51,13 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
             try {
                 input = record.getStream();
                 addedRecord = dataStore.addRecord(input);
+                executionStates.reportWriteSuccess(record.getIdentifier());
                 log.debug("Added record ({}) to a new record ({}).", record.getIdentifier(),
                         addedRecord.getIdentifier());
+            } catch (DataStoreException e) {
+                executionStates.reportWriteError(record.getIdentifier(), e.toString());
             } finally {
-                if (input != null) {
-                    try {
-                        input.close();
-                    } catch (IOException e) {
-                        log.error("Error while closing input stream.", e);
-                    }
-                }
+                IOUtils.closeQuietly(input);
             }
         }
     }

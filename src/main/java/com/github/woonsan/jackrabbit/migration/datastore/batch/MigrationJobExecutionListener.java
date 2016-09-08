@@ -16,29 +16,31 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
-
-    private static Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
+public class MigrationJobExecutionListener extends JobExecutionListenerSupport {
 
     @Autowired
     private DataStoreFactory dataStoreFactory;
 
-    public JobCompletionNotificationListener() {
+    @Autowired
+    private MigrationJobExecutionStates executionStates;
+
+    @Autowired
+    private MigrationJobExecutionReporter executionReporter;
+
+    @Override
+    public void beforeJob(JobExecution jobExecution) {
+        executionStates.reset();
+        executionStates.setStartedTimeMillis(System.currentTimeMillis());
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
+        executionStates.setStoppedTimeMillis(System.currentTimeMillis());
         dataStoreFactory.clear();
-
-        if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-            log.info("!!! JOB FINISHED! Time to verify the results");
-        }
+        executionReporter.report();
     }
 }

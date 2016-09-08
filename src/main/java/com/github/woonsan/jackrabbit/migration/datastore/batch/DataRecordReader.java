@@ -16,8 +16,6 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
-import java.util.Iterator;
-
 import org.apache.jackrabbit.core.data.DataIdentifier;
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
@@ -28,14 +26,16 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DataRecordReader implements ItemReader<DataRecord> {
 
     private static Logger log = LoggerFactory.getLogger(DataRecordReader.class);
 
-    private DataStore dataStore;
+    @Autowired
+    private MigrationJobExecutionStates executionStates;
 
-    private volatile Iterator<DataIdentifier> identifierIterator;
+    private DataStore dataStore;
 
     public DataRecordReader(final DataStore dataStore) {
         this.dataStore = dataStore;
@@ -43,48 +43,19 @@ public class DataRecordReader implements ItemReader<DataRecord> {
 
     @Override
     public DataRecord read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        Iterator<DataIdentifier> idIt = getIdentifierIterator();
+        final DataIdentifier id = executionStates.getNextSourceDataIdentifier();
 
-        if (idIt != null) {
-            DataIdentifier id;
-            DataRecord record;
+        DataRecord record = null;
 
-            while (idIt.hasNext()) {
-                id = idIt.next();
-                record = null;
-
-                try {
-                    record = dataStore.getRecord(id);
-                } catch (DataStoreException e) {
-                    log.warn("Data record not found: {}", id);
-                }
-
-                if (record != null) {
-                    return record;
-                }
+        if (id != null) {
+            try {
+                record = dataStore.getRecord(id);
+                executionStates.reportReadSuccess(id);
+            } catch (DataStoreException e) {
+                executionStates.reportReadError(id, e.toString());
             }
         }
 
-        return null;
-    }
-
-    private Iterator<DataIdentifier> getIdentifierIterator() {
-        Iterator<DataIdentifier> idIt = identifierIterator;
-
-        if (idIt == null) {
-            synchronized (this) {
-                idIt = identifierIterator;
-
-                if (idIt == null) {
-                    try {
-                        identifierIterator = idIt = dataStore.getAllIdentifiers();
-                    } catch (DataStoreException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-
-        return idIt;
+        return record;
     }
 }
