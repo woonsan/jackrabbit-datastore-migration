@@ -1,5 +1,8 @@
 # jackrabbit-datastore-migration
 
+[![Build Status](https://travis-ci.org/woonsan/jackrabbit-datastore-migration.svg?branch=develop)](https://travis-ci.org/woonsan/jackrabbit-datastore-migration)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/woonsan/jackrabbit-datastore-migration/develop/LICENSE)
+
 ```DataStore``` migration tool for Apache Jackrabbit.
 Apache Jackrabbit supports various ```DataStore``` components such as ```FileDataStore```, ```DbDataStore```,
 ```S3DataStore``` and ```VFSDataStore```.
