@@ -50,7 +50,7 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
                 input = record.getStream();
                 dataStore.addRecord(input);
                 executionStates.reportWriteSuccess(record.getIdentifier());
-                log.info("Record migrated: '{}' ({}%)", record.getIdentifier(),
+                log.info("Record migrated: '{}' ({}%ile)", record.getIdentifier(),
                         String.format("%2.1f", 100.0 * executionStates.getWriteProgress()));
             } catch (DataStoreException e) {
                 executionStates.reportWriteError(record.getIdentifier(), e.toString());

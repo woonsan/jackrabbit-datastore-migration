@@ -29,7 +29,7 @@ source:
             driver: 'com.mysql.jdbc.Driver'
             databaseType: 'mysql'
             minRecordLength: '1024'
-            maxConnections: '5'
+            maxConnections: '10'
             copyWhenReading: 'true'
             tablePrefix: ''
             schemaObjectPrefix: ''
