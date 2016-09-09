@@ -15,36 +15,46 @@ So, it follows most of the standard conventions established by those projects.
 
 ## How to Build
 
-        $ mvn clean package
+```sh
+$ mvn clean package
+```
 
 ## How to Run
 
 ### Example: FileDataStore to FileDataStore
 
-        $ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
-                --spring.config.location=config/example-fs-to-fs.yaml
+```sh
+$ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
+    --spring.config.location=config/example-fs-to-fs.yaml
+```
 
 You can also run `mvn spring-boot:run` from the source folder instead like the following:
 
-        & mvn spring-boot:run \
-                -Drun.jvmArguments="-Dspring.config.location=config/example-fs-to-fs.yaml"
+```sh
+$ mvn spring-boot:run \
+    -Drun.jvmArguments="-Dspring.config.location=config/example-fs-to-fs.yaml"
+```
 
 ### Example: DbDataStore to VFSDataStore
 
 Assuming you have JDBC Driver jar file in ```lib/``` directory,
 
-        $ java -Dloader.path="lib/" \
-                -jar target/jackrabbit-datastore-migration-0.0.1-SNAPSHOT.jar \
-                --spring.config.location=config/example-db-to-vfs.yaml
+```sh
+$ java -Dloader.path="lib/" \
+    -jar target/jackrabbit-datastore-migration-0.0.1-SNAPSHOT.jar \
+    --spring.config.location=config/example-db-to-vfs.yaml
+```
 
 So, in the preceding, you should copy a proper JDBC driver jar file to the folder path
 specified by ```-Dloader.path```.
 
 You can also specify ```-Dloader.path``` to somewhere else like the following example:
 
-        $ java -Dloader.path=/home/tester/.m2/repository/mysql/mysql-connector-java/5.1.38/ \
-                -jar target/jackrabbit-datastore-migration-0.0.1-SNAPSHOT.jar \
-                --spring.config.location=config/example-db-to-vfs.yaml
+```sh
+$ java -Dloader.path=/home/tester/.m2/repository/mysql/mysql-connector-java/5.1.38/ \
+    -jar target/jackrabbit-datastore-migration-0.0.1-SNAPSHOT.jar \
+    --spring.config.location=config/example-db-to-vfs.yaml
+```
 
 ## Configurations
 
@@ -57,7 +67,7 @@ Some example configuration files are located in [config/](config/) folder:
 
 Here's a simplistic example configuration to migrate from ```DbDataStore``` to ```VFSDataStore```:
 
-```
+```yaml
 source:
     dataStore:
         homeDir: 'target/storage-db'
