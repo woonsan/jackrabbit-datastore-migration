@@ -55,6 +55,39 @@ Some example configuration files are located in [config/](config/) folder:
 - ```FileDataStore``` to ```FileDataStore``` example: [config/example-fs-to-fs.yaml](config/example-fs-to-fs.yaml)
 - ```DbDataStore``` to ```VFSDataStore``` example: [config/example-db-to-vfs.yaml](config/example-db-to-vfs.yaml)
 
+Here's a simplistic example configuration to migrate from ```DbDataStore``` to ```VFSDataStore```:
+
+```
+source:
+    dataStore:
+        homeDir: 'target/storage-db'
+        className: 'org.apache.jackrabbit.core.data.db.DbDataStore'
+        params:
+            url: 'jdbc:mysql://localhost:3306/repodb?autoReconnect=true&characterEncoding=utf8'
+            user: 'repouser'
+            password: 'repouserpass'
+            driver: 'com.mysql.jdbc.Driver'
+            databaseType: 'mysql'
+            minRecordLength: '1024'
+            maxConnections: '10'
+            copyWhenReading: 'true'
+            tablePrefix: ''
+            schemaObjectPrefix: ''
+            schemaCheckEnabled: 'false'
+
+target:
+    dataStore:
+        homeDir: '/Users/woonsanko/workspace/jackrabbit-datastore-migration/target/storage-vfs-visitmt'
+        className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
+        params:
+            baseFolderUri: 'file://${target.dataStore.homeDir}/repository/datastore'
+            minRecordLength: '1024'
+```
+
+Basically, each ```DataStore``` configuration (for ```source``` and ```target``` in the migration job) is equivalent
+to the configuration in the ```repository.xml```.
+Therefore, for the details, please refer to the Apache Jackrabbit DataStore configurations.
+
 ## Example Outputs
 
 ### From a FileDataStore (14 entries only) to another FileDataStore
