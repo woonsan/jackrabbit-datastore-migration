@@ -87,7 +87,7 @@ source:
 
 target:
     dataStore:
-        homeDir: '/Users/woonsanko/workspace/jackrabbit-datastore-migration/target/storage-vfs-visitmt'
+        homeDir: '/home/tester/jackrabbit-datastore-migration/target/storage-vfs-visitmt'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
             baseFolderUri: 'file://${target.dataStore.homeDir}/repository/datastore'
