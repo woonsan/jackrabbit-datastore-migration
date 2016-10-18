@@ -45,6 +45,9 @@
 
     <jackrabbit.version>2.13.3</jackrabbit.version>
 
+    <maven-source-plugin.version>2.4</maven-source-plugin.version>
+    <maven-javadoc-plugin.version>2.10.2</maven-javadoc-plugin.version>
+
     <jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
     <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
 
@@ -86,6 +89,17 @@
       <timezone>America/New_York</timezone>
     </developer>
   </developers>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
 
@@ -209,6 +223,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
+            <version>${maven-source-plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -221,6 +236,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven-javadoc-plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
