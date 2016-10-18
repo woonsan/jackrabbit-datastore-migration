@@ -15,6 +15,9 @@ So, it follows most of the standard conventions established by those projects.
 
 ## How to Build
 
+First, download the latest source release form https://github.com/woonsan/jackrabbit-datastore-migration/releases.
+And, extract the compressed file and build the project in the uncompressed folder.
+
 ```sh
 $ mvn clean package
 ```
