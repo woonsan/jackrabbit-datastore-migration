@@ -21,6 +21,7 @@ import org.apache.jackrabbit.core.data.DataIdentifier;
 public class MigrationRecordExecutionStates {
 
     private final DataIdentifier identifier;
+    private long writeSize;
     private boolean readSucceeded;
     private String readError;
     private boolean writeSucceeded;
@@ -40,6 +41,14 @@ public class MigrationRecordExecutionStates {
 
     public void setReadSucceeded(boolean readSucceeded) {
         this.readSucceeded = readSucceeded;
+    }
+
+    public long getWriteSize() {
+        return writeSize;
+    }
+
+    public void setWriteSize(long writeSize) {
+        this.writeSize = writeSize;
     }
 
     public String getReadError() {

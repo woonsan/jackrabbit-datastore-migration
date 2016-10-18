@@ -94,6 +94,11 @@ public class MigrationJobExecutionStates {
         return Collections.unmodifiableMap(executionStatesMap);
     }
 
+    public void reportWriteSize(final DataIdentifier identifier, final long writeSize) {
+        final MigrationRecordExecutionStates recordStates = executionStatesMap.get(identifier);
+        recordStates.setWriteSize(writeSize);
+    }
+
     public void reportReadSuccess(final DataIdentifier identifier) {
         readCount.incrementAndGet();
         final MigrationRecordExecutionStates recordStates = executionStatesMap.get(identifier);

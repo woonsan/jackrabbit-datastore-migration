@@ -91,7 +91,7 @@ public class MigrationJobExecutionReporter {
 
         try {
             csvPrinter = CSVFormat.DEFAULT
-                    .withHeader("SEQ", "ID", "READ", "WRITE", "ERROR")
+                    .withHeader("SEQ", "ID", "READ", "WRITE", "SIZE", "ERROR")
                     .print(out);
 
             int seq = 0;
@@ -104,6 +104,7 @@ public class MigrationJobExecutionReporter {
                         identifier,
                         recordStates.isReadSucceeded(),
                         recordStates.isWriteSucceeded(),
+                        recordStates.getWriteSize(),
                         StringUtils.isNotEmpty(recordStates.getReadError()) ? recordStates.getReadError() : recordStates.getWriteError());
             }
         } catch (IOException e) {

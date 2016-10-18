@@ -19,7 +19,6 @@ package com.github.woonsan.jackrabbit.migration.datastore.batch;
 import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.core.data.DataRecord;
-import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -31,6 +30,8 @@ import org.springframework.batch.core.step.builder.StepBuilderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @EnableBatchProcessing
@@ -67,8 +68,12 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public DataRecordItemListener dataRecordItemListener() {
-        return new DataRecordItemListener();
+    public TaskExecutor taskExecutor() {
+        final ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setMaxPoolSize(10);
+        taskExecutor.setDaemon(true);
+        return taskExecutor;
     }
 
     @Bean
@@ -88,7 +93,7 @@ public class BatchConfiguration {
                     .<DataRecord, DataRecord> chunk(10)
                     .reader(dataRecordReader())
                     .writer(dataRecordWriter())
-                    .listener((ItemWriteListener<DataRecord>) dataRecordItemListener())
+                    .taskExecutor(taskExecutor())
                     .build();
         } catch (RepositoryException e) {
             throw new StepBuilderException(e);

@@ -31,5 +31,5 @@ target:
         homeDir: 'target/storage-fs'
         className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:
-            path: '${target.dataStore.homeDir}/repository/datastore'
+            path: '${target.dataStore.homeDir}/fsds'
             minRecordLength: '1024'

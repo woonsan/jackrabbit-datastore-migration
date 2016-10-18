@@ -29,7 +29,7 @@ source:
             driver: 'com.mysql.jdbc.Driver'
             databaseType: 'mysql'
             minRecordLength: '1024'
-            maxConnections: '5'
+            maxConnections: '10'
             copyWhenReading: 'true'
             tablePrefix: ''
             schemaObjectPrefix: ''
@@ -40,5 +40,6 @@ target:
         homeDir: '/tmp/storage-vfs'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
-            baseFolderUri: 'file://${target.dataStore.homeDir}/repository/datastore'
+            asyncUploadLimit: '0'
+            baseFolderUri: 'file://${target.dataStore.homeDir}/vfsds'
             minRecordLength: '1024'
