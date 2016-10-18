@@ -28,6 +28,7 @@
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>DataStore migration tool for Apache Jackrabbit</description>
+  <url>https://github.com/woonsan/jackrabbit-datastore-migration</url>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
