@@ -65,6 +65,9 @@ Some example configuration files are located in [config/](config/) folder:
 - ```FileDataStore``` to ```FileDataStore``` example: [config/example-fs-to-fs.yaml](config/example-fs-to-fs.yaml)
 - ```DbDataStore``` to ```VFSDataStore``` example: [config/example-db-to-vfs.yaml](config/example-db-to-vfs.yaml)
 
+*Note*: The file/folder layout of the date record files of ```VFSDataStore``` is actually the same as ```FileDataStore```.
+Therefore, you might want to use ```FileDataStore``` as target first and move the file/folder data to external SFTP or WebDAV system if possible.
+
 Here's a simplistic example configuration to migrate from ```DbDataStore``` to ```VFSDataStore```:
 
 ```yaml
