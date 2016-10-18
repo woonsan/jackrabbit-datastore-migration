@@ -28,8 +28,6 @@ source:
 target:
     dataStore:
         homeDir: 'target/storage'
-        className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
+        className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:
-            asyncUploadLimit: '0'
-            baseFolderUri: 'file://${basedir}/target/vfsds'
             minRecordLength: '1024'

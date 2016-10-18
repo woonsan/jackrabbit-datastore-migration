@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.core.data.DataIdentifier;
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
 import org.apache.jackrabbit.core.data.DataStoreException;
@@ -43,13 +44,18 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
 
     @Override
     public void write(List<? extends DataRecord> items) throws Exception {
+        DataIdentifier identifier;
+        DataRecord addedRecord;
+
         for (DataRecord record : items) {
+            identifier = record.getIdentifier();
             InputStream input = null;
 
             try {
                 input = record.getStream();
-                dataStore.addRecord(input);
-                executionStates.reportWriteSuccess(record.getIdentifier());
+                addedRecord = dataStore.addRecord(input);
+                executionStates.reportWriteSize(identifier, addedRecord.getLength());
+                executionStates.reportWriteSuccess(identifier);
                 log.info("Record migrated: '{}' ({}%ile)", record.getIdentifier(),
                         String.format("%2.1f", 100.0 * executionStates.getWriteProgress()));
             } catch (DataStoreException e) {
