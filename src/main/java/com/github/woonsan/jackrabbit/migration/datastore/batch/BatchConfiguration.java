@@ -28,6 +28,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.builder.StepBuilderException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -35,6 +36,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @EnableBatchProcessing
+@ConfigurationProperties(prefix="batch")
 public class BatchConfiguration {
 
     @Autowired
@@ -51,6 +53,26 @@ public class BatchConfiguration {
 
     @Autowired
     private TargetDataStoreConfiguration targetDataStoreConfiguration;
+
+    private int minWorkers = 10;
+
+    private int maxWorkers = 10;
+
+    public int getMinWorkers() {
+        return minWorkers;
+    }
+
+    public void setMinWorkers(int minWorkers) {
+        this.minWorkers = minWorkers;
+    }
+
+    public int getMaxWorkers() {
+        return maxWorkers;
+    }
+
+    public void setMaxWorkers(int maxWorkers) {
+        this.maxWorkers = maxWorkers;
+    }
 
     @Bean
     public DataRecordReader dataRecordReader() throws RepositoryException {
@@ -70,8 +92,8 @@ public class BatchConfiguration {
     @Bean
     public TaskExecutor taskExecutor() {
         final ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(10);
-        taskExecutor.setMaxPoolSize(10);
+        taskExecutor.setCorePoolSize(getMinWorkers());
+        taskExecutor.setMaxPoolSize(getMaxWorkers());
         taskExecutor.setDaemon(true);
         return taskExecutor;
     }

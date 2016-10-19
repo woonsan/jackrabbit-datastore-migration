@@ -18,6 +18,10 @@ logging:
         root: 'WARN'
         com.github.woonsan.jackrabbit.migration.datastore: 'INFO'
 
+batch:
+    minWorkers: '10'
+    maxWorkers: '10'
+
 source:
     dataStore:
         homeDir: 'target/test-classes'
