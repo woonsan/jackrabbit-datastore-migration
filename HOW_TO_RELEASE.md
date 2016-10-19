@@ -13,9 +13,7 @@ How to Release
 
   For example,
 
-        mvn org.codehaus.mojo:versions-maven-plugin:2.1:set \
-            -DgenerateBackupPoms=false \
-            -DnewVersion="1.1"
+        mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPoms=false -DnewVersion="1.1"
 
 ## Publish the release branch
 
@@ -39,9 +37,7 @@ How to Release
 
         git push origin master
         git checkout develop
-        mvn org.codehaus.mojo:versions-maven-plugin:2.1:set \
-            -DgenerateBackupPoms=false \
-            -DnewVersion="1.2-SNAPSHOT"
+        mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPoms=false -DnewVersion="1.2-SNAPSHOT"
 
 ## Release it from the release branch through GitHub Web UI.
 
