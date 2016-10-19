@@ -31,15 +31,21 @@ How to Release
 
         git flow release finish 1.1
 
-## Push from ```master``` branch and bump up version in ```develop``` branch.
+## Push ```master``` branch and bump up version in ```develop``` branch and push it.
 
   For example,
 
         git push origin master
         git checkout develop
         mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPoms=false -DnewVersion="1.2-SNAPSHOT"
+        git push origin develop
 
-## Release it from the release branch through GitHub Web UI.
+# Push the newly generated tag.
+
+  For example,
+
+        git tag -l
+        git push origin 1.1
 
 ## (Optional) Deploy the release
 
