@@ -23,6 +23,9 @@ And, extract the compressed file and build the project in the uncompressed folde
 $ mvn clean package
 ```
 
+The build will generate single jar artifict under the ```target/``` folder. e.g., ```target/jackrabbit-datastore-migration-x.x.x.jar```. You can also copy this jar to somewhere else to run the tool there. This single jar file contains everything to run the Spring Batch/Boot-based migration tool application that can be started using ```java -jar``` command.
+
+
 ## How to Run
 
 ### Example: FileDataStore to FileDataStore
