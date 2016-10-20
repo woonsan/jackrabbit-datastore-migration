@@ -8,7 +8,8 @@ Apache Jackrabbit supports various ```DataStore``` components such as ```FileDat
 ```S3DataStore``` and ```VFSDataStore```.
 See http://woonsanko.blogspot.com/2016/08/cant-we-store-huge-amount-of-binary.html for detail.
 
-This migration tool lets you to migrate one ```DataStore``` to another ```DataStore```. e.g, from ```DbDataStore``` to ```VFSDataStore```
+This migration tool lets you to migrate one ```DataStore``` to another ```DataStore```. e.g, from ```DbDataStore``` to ```VFSDataStore```.
+Also my experience with this tool is shared in http://woonsanko.blogspot.com/2016/10/playing-with-apache-jackrabbit.html.
 
 This tool has been implemented with **Spring Boot** and **Spring Batch**.
 So, it follows most of the standard conventions established by those projects.
