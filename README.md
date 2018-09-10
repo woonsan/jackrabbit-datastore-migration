@@ -97,12 +97,13 @@ source:
 
 target:
     dataStore:
-        homeDir: '/home/tester/jackrabbit-datastore-migration/target/storage-vfs-visitmt'
+        homeDir: '/tmp/storage-vfs-sftp'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
-            asyncUploadLimit: '0'
-            baseFolderUri: 'file://${target.dataStore.homeDir}/vfsds'
+            path: '${target.dataStore.homeDir}/datastore'
+            config: 'config/example-vfs-sftp.properties'
             minRecordLength: '1024'
+            asyncUploadLimit: '0'
 ```
 
 Basically, each ```DataStore``` configuration (for ```source``` and ```target``` in the migration job) is equivalent
