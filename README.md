@@ -8,7 +8,8 @@ Apache Jackrabbit supports various ```DataStore``` components such as ```FileDat
 ```S3DataStore``` and ```VFSDataStore```.
 See http://woonsanko.blogspot.com/2016/08/cant-we-store-huge-amount-of-binary.html for detail.
 
-This migration tool lets you to migrate one ```DataStore``` to another ```DataStore```. e.g, from ```DbDataStore``` to ```VFSDataStore```
+This migration tool lets you to migrate one ```DataStore``` to another ```DataStore```. e.g, from ```DbDataStore``` to ```VFSDataStore```.
+Also my experience with this tool is shared in http://woonsanko.blogspot.com/2016/10/playing-with-apache-jackrabbit.html.
 
 This tool has been implemented with **Spring Boot** and **Spring Batch**.
 So, it follows most of the standard conventions established by those projects.
@@ -21,6 +22,9 @@ And, extract the compressed file and build the project in the uncompressed folde
 ```sh
 $ mvn clean package
 ```
+
+The build will generate single jar artifict under the ```target/``` folder. e.g., ```target/jackrabbit-datastore-migration-x.x.x.jar```. You can also copy this jar to somewhere else to run the tool there. This single jar file contains everything to run the Spring Batch/Boot-based migration tool application that can be started using ```java -jar``` command.
+
 
 ## How to Run
 
@@ -93,17 +97,20 @@ source:
 
 target:
     dataStore:
-        homeDir: '/home/tester/jackrabbit-datastore-migration/target/storage-vfs-visitmt'
+        homeDir: '/tmp/storage-vfs-sftp'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
-            asyncUploadLimit: '0'
-            baseFolderUri: 'file://${target.dataStore.homeDir}/vfsds'
+            path: '${target.dataStore.homeDir}/datastore'
+            config: 'config/example-vfs-sftp.properties'
             minRecordLength: '1024'
+            asyncUploadLimit: '0'
 ```
 
 Basically, each ```DataStore``` configuration (for ```source``` and ```target``` in the migration job) is equivalent
 to the configuration in the ```repository.xml```.
 Therefore, for the details, please refer to the Apache Jackrabbit DataStore configurations.
+
+Also, find other example configurations in [config](config) directory.
 
 ## Example Outputs
 

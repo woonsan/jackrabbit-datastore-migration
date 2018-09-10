@@ -41,10 +41,10 @@ source:
 
 target:
     dataStore:
-        homeDir: '/tmp/storage-vfs-sftp'
-        className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
+        homeDir: '/tmp/storage-s3'
+        className: 'org.apache.jackrabbit.aws.ext.ds.S3DataStore'
         params:
             path: '${target.dataStore.homeDir}/datastore'
-            config: 'config/example-vfs-sftp.properties'
+            config: 'config/example-aws.properties'
             minRecordLength: '1024'
             asyncUploadLimit: '0'

@@ -23,7 +23,7 @@
 
   <groupId>com.github.woonsan</groupId>
   <artifactId>jackrabbit-datastore-migration</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -41,9 +41,9 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
 
-    <jackrabbit.version>2.13.3</jackrabbit.version>
+    <jackrabbit.version>2.16.3</jackrabbit.version>
 
     <maven-source-plugin.version>2.4</maven-source-plugin.version>
     <maven-javadoc-plugin.version>2.10.2</maven-javadoc-plugin.version>
@@ -147,6 +147,13 @@
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-vfs-ext</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.54</version>
       <scope>runtime</scope>
     </dependency>
 
