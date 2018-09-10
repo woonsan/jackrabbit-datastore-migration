@@ -110,6 +110,8 @@ Basically, each ```DataStore``` configuration (for ```source``` and ```target```
 to the configuration in the ```repository.xml```.
 Therefore, for the details, please refer to the Apache Jackrabbit DataStore configurations.
 
+Also, find other example configurations in [config](config) directory.
+
 ## Example Outputs
 
 ### From a FileDataStore (14 entries only) to another FileDataStore
