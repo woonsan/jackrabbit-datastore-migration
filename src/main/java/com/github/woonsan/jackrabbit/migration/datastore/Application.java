@@ -16,13 +16,35 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Application {
 
+    private static final String SYSTEM_PROP_ARG_PREFIX = "--sysprop.";
+
     public static void main(String[] args) {
+        configureSystemPropertiesFromArguments(args);
         SpringApplication.run(Application.class, args);
+    }
+
+    private static void configureSystemPropertiesFromArguments(String[] args) {
+        if (args == null) {
+            return;
+        }
+
+        for (String arg : args) {
+            if (arg.startsWith(SYSTEM_PROP_ARG_PREFIX)) {
+                final String pair = arg.substring(SYSTEM_PROP_ARG_PREFIX.length());
+                final String propName = StringUtils.trim(StringUtils.substringBefore(pair, "="));
+                final String propValue = StringUtils.trim(StringUtils.substringAfter(pair, "="));
+
+                if (StringUtils.isNotEmpty(propName) && StringUtils.isNotEmpty(propValue)) {
+                    System.setProperty(propName, propValue);
+                }
+            }
+        }
     }
 }

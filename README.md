@@ -28,6 +28,24 @@ The build will generate single jar artifict under the ```target/``` folder. e.g.
 
 ## How to Run
 
+### *NOTE*: Passing System Properties
+
+If you need to set system properties for some reason,
+you may pass those as command line arguments that start with `--sysprop.` like the following:
+
+```sh
+$ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
+    --sysprop.ds.digest.algorithm=SHA-1 \
+    ...
+```
+
+In the above example, it results in the same effect that `System.setProperty("ds.digest.algorithm", "SHA-1")`.
+
+By the way, you don't have to set the `ds.digest.algorithm` property ("SHA-256" by default)
+if your DataStore has been used with Apache Jackrabbit 2.16.0 or higher.
+
+See the "Incompatible DataIdentifiers between Apache Jackrabbit Versions" section below for detail.
+
 ### Example: FileDataStore to FileDataStore
 
 ```sh
@@ -62,6 +80,37 @@ $ java -Dloader.path=/home/tester/.m2/repository/mysql/mysql-connector-java/5.1.
     -jar target/jackrabbit-datastore-migration-0.0.1-SNAPSHOT.jar \
     --spring.config.location=config/example-db-to-vfs.yaml
 ```
+
+## Incompatible DataIdentifiers between Apache Jackrabbit Versions
+
+Since Apache Jackrabbit 2.16.0, the DataIdentifier generation algorithm has been changed from "SHA-1" to
+"SHA-256" (ref: https://jira.apache.org/jira/browse/JCR-4115).
+
+If your DataStore has been used with Apache Jackrabbit 2.16.0 or higher, then you can ignore this section
+because the DataIdentifiers of the source DataStore and those of the target DataStore will the same anyway.
+
+If your DataStore has been used with the earlier version than 2.16.0 -- refer to https://jira.apache.org/jira/browse/JCR-4115
+to be precise -- and if you want to migrate the DataStore in the same version range, then you must set the
+`ds.digest.algorithm` property to `SHA-1` to be compatible like the following:
+
+```sh
+$ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
+    --sysprop.ds.digest.algorithm=SHA-1 \
+    ...
+```
+
+### What if I want to migrate from older versions to 2.16.0 or higher?
+
+This tool does not provide a perfect solution for that scenario.
+
+In general, the following steps are required in high level:
+
+1. First, upgrade the source repository to use Apache Jackrabbit 2.16.0 or higher in order to use "SHA-256" by default.
+1. Update all the existing DataIdentifiers in the source DataStore from "SHA-1" based to "SHA-256" based identifiers.
+1. Finally, migrate the source DataStore to new target DataStore with this tool.
+
+Unfortunately, there is no tool for the second step at the moment.
+I think the second step deserve another separate tool support.
 
 ## Configurations
 
