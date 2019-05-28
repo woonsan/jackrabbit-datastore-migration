@@ -16,14 +16,18 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.core.data.Backend;
 import org.apache.jackrabbit.core.data.DataIdentifier;
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
-import org.apache.jackrabbit.core.data.DataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
@@ -36,34 +40,81 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
     @Autowired
     private MigrationJobExecutionStates executionStates;
 
-    private DataStore dataStore;
+    private final DataStore dataStore;
+
+    private final Backend backend;
+
+    private final File backendTempDir;
 
     public DataRecordWriter(final DataStore dataStore) {
         this.dataStore = dataStore;
+        this.backend = null;
+        this.backendTempDir = null;
+    }
+
+    public DataRecordWriter(final Backend backend, final File backendTempDir) {
+        this.dataStore = null;
+        this.backend = backend;
+        this.backendTempDir = backendTempDir;
     }
 
     @Override
     public void write(List<? extends DataRecord> items) throws Exception {
-        DataIdentifier identifier;
-        DataRecord addedRecord;
-
         for (DataRecord record : items) {
-            identifier = record.getIdentifier();
-            InputStream input = null;
+            final DataIdentifier identifier = record.getIdentifier();
 
             try {
-                input = record.getStream();
-                addedRecord = dataStore.addRecord(input);
-                executionStates.reportWriteSize(identifier, addedRecord.getLength());
+                final long recordLength;
+
+                if (backend == null) {
+                    recordLength = addRecordThroughDataStore(record);
+                } else {
+                    recordLength = addRecordThroughBackend(identifier, record);
+                }
+
+                executionStates.reportWriteSize(identifier, recordLength);
                 executionStates.reportWriteSuccess(identifier);
-                log.info("Record migrated: '{}' ({}%ile)", record.getIdentifier(),
+                log.info("Record migrated: '{}' ({}%ile)", identifier,
                         String.format("%2.1f", 100.0 * executionStates.getWriteProgress()));
-            } catch (DataStoreException e) {
-                executionStates.reportWriteError(record.getIdentifier(), e.toString());
-            } finally {
-                IOUtils.closeQuietly(input);
+            } catch (Exception e) {
+                executionStates.reportWriteError(identifier, e.toString());
             }
         }
     }
 
+    private long addRecordThroughDataStore(final DataRecord record) throws Exception {
+        InputStream input = null;
+
+        try {
+            input = record.getStream();
+            final DataRecord addedRecord = dataStore.addRecord(input);
+            return addedRecord.getLength();
+        } finally {
+            IOUtils.closeQuietly(input);
+        }
+    }
+
+    private long addRecordThroughBackend(final DataIdentifier identifier, final DataRecord record)
+            throws Exception {
+        InputStream input = null;
+        OutputStream output = null;
+        File tempFile = null;
+
+        try {
+            input = record.getStream();
+            tempFile = File.createTempFile("tmp", null, backendTempDir);
+            output = new FileOutputStream(tempFile);
+
+            IOUtils.copyLarge(input, output);
+            IOUtils.closeQuietly(output);
+            output = null;
+
+            backend.write(identifier, tempFile);
+            return record.getLength();
+        } finally {
+            IOUtils.closeQuietly(output);
+            IOUtils.closeQuietly(input);
+            FileUtils.deleteQuietly(tempFile);
+        }
+    }
 }

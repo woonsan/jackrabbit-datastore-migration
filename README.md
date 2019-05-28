@@ -146,6 +146,7 @@ source:
 
 target:
     dataStore:
+        directBackendAccess: false    # whether or not to use the Backend and source DataIdentifier directly.
         homeDir: '/tmp/storage-vfs-sftp'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:
