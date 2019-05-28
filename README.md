@@ -104,14 +104,6 @@ the internal `Backend` of the `CachingDataStore` and pass the source `DataIdenti
 the identifier. So, the migration will make a totally backward compatible migration even in different versions.
 
 
-In other cases, the following steps are required, in principle:
-
-1. First, upgrade the source repository to use Apache Jackrabbit 2.16.0 or higher in order to use "SHA-256" by default.
-1. Update all the existing DataIdentifiers in the source DataStore from "SHA-1" based to "SHA-256" based identifiers.
-1. Finally, migrate the source DataStore to new target DataStore with this tool.
-
-There is no consideration for the second step with this tool.
-
 ## Configurations
 
 You can specify **source** ```DataStore``` and **target** ```DataStore``` and others (such as logging) in a
