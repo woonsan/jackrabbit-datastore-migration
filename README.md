@@ -84,8 +84,8 @@ Since Apache Jackrabbit 2.16.0, the DataIdentifier generation algorithm has been
 If your DataStore has been used with Apache Jackrabbit 2.16.0 or higher, then you can ignore this section
 because the DataIdentifiers of the source DataStore and those of the target DataStore will the same anyway.
 
-If your DataStore has been used with the earlier version than 2.16.0 -- precisely speaking, if your Apache Jackrabbit instance uses SHA-1 algorithm; refer to [#3](https://github.com/woonsan/jackrabbit-datastore-migration/issues/3) and https://jira.apache.org/jira/browse/JCR-4115
-to be precise -- and if you want to migrate the DataStore in the same version range, then you may set the
+If your DataStore has been used with the earlier version than 2.16.0 -- precisely speaking, if your Apache Jackrabbit instance uses SHA-1 algorithm; be referred to [#3](https://github.com/woonsan/jackrabbit-datastore-migration/issues/3) and https://jira.apache.org/jira/browse/JCR-4115
+for detail -- and if you want to migrate the DataStore in the same version range, then you may set the
 `ds.digest.algorithm` property to `SHA-1` to be compatible like the following:
 
 ```sh
