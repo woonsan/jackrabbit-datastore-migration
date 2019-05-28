@@ -14,23 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.woonsan.jackrabbit.migration.datastore.batch;
+package org.apache.jackrabbit.core.data;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+/**
+ * Helper to get a direct access to the {@link Backend} of a {@link CachingDataStore}.
+ */
+public final class CachingDataStoreAccess {
 
-@Component
-@ConfigurationProperties(prefix = "target.dataStore")
-public class TargetDataStoreConfiguration extends DataStoreConfiguration {
-
-    private boolean directBackendAccess;
-
-    public boolean isDirectBackendAccess() {
-        return directBackendAccess;
+    private CachingDataStoreAccess() {
     }
 
-    public void setDirectBackendAccess(boolean directBackendAccess) {
-        this.directBackendAccess = directBackendAccess;
-    }
+    /**
+     * Return the {@link Backend} object if accessible, or {@code null} otherwise.
+     * @param dataStore the {@link DataStore} object.
+     * @return the {@link Backend} object if accessible, or {@code null} otherwise
+     */
+    public static final Backend getBackendIfAccessible(final DataStore dataStore) {
+        if (dataStore instanceof CachingDataStore) {
+            return ((CachingDataStore) dataStore).backend;
+        }
 
+        return null;
+    }
 }

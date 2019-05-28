@@ -35,16 +35,11 @@ you may pass those as command line arguments that start with `--sysprop.` like t
 
 ```sh
 $ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
-    --sysprop.ds.digest.algorithm=SHA-1 \
+    --sysprop.example.prop1=value1 \
     ...
 ```
 
-In the above example, it results in the same effect that `System.setProperty("ds.digest.algorithm", "SHA-1")`.
-
-By the way, you don't have to set the `ds.digest.algorithm` property ("SHA-256" by default)
-if your DataStore has been used with Apache Jackrabbit 2.16.0 or higher.
-
-See the "Incompatible DataIdentifiers between Apache Jackrabbit Versions" section below for detail.
+In the above example, it results in the same effect that `System.setProperty("example.prop1", "value1")`.
 
 ### Example: FileDataStore to FileDataStore
 
@@ -89,8 +84,8 @@ Since Apache Jackrabbit 2.16.0, the DataIdentifier generation algorithm has been
 If your DataStore has been used with Apache Jackrabbit 2.16.0 or higher, then you can ignore this section
 because the DataIdentifiers of the source DataStore and those of the target DataStore will the same anyway.
 
-If your DataStore has been used with the earlier version than 2.16.0 -- refer to https://jira.apache.org/jira/browse/JCR-4115
-to be precise -- and if you want to migrate the DataStore in the same version range, then you must set the
+If your DataStore has been used with the earlier version than 2.16.0 -- precisely speaking, if your Apache Jackrabbit instance uses SHA-1 algorithm; be referred to [#3](https://github.com/woonsan/jackrabbit-datastore-migration/issues/3) and https://jira.apache.org/jira/browse/JCR-4115
+for detail -- and if you want to migrate the DataStore in the same version range, then you may set the
 `ds.digest.algorithm` property to `SHA-1` to be compatible like the following:
 
 ```sh
@@ -101,16 +96,13 @@ $ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
 
 ### What if I want to migrate from older versions to 2.16.0 or higher?
 
-This tool does not provide a perfect solution for that scenario.
+This tool does not provide a perfect solution for every case.
 
-In general, the following steps are required in high level:
+However, if your target `DataStore` is one of `CachingDataStore` such as `VFSDataStore` and `S3DataStore`,
+then you may set `target.dataStore.directBackendAccess: true`. By changing it to `true`, this tool will try to access
+the internal `Backend` of the `CachingDataStore` and pass the source `DataIdentifier` directly without having to re-generate
+the identifier. So, the migration will make a totally backward compatible migration even in different versions.
 
-1. First, upgrade the source repository to use Apache Jackrabbit 2.16.0 or higher in order to use "SHA-256" by default.
-1. Update all the existing DataIdentifiers in the source DataStore from "SHA-1" based to "SHA-256" based identifiers.
-1. Finally, migrate the source DataStore to new target DataStore with this tool.
-
-Unfortunately, there is no tool for the second step at the moment.
-I think the second step deserve another separate tool support.
 
 ## Configurations
 
@@ -146,6 +138,7 @@ source:
 
 target:
     dataStore:
+        directBackendAccess: false    # whether or not to use the Backend and source DataIdentifier directly.
         homeDir: '/tmp/storage-vfs-sftp'
         className: 'org.apache.jackrabbit.vfs.ext.ds.VFSDataStore'
         params:

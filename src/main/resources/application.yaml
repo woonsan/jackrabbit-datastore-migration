@@ -31,6 +31,7 @@ source:
 
 target:
     dataStore:
+        directBackendAccess: false    # whether or not to use the Backend and source DataIdentifier directly.
         homeDir: 'target/storage'
         className: 'org.apache.jackrabbit.core.data.FileDataStore'
         params:

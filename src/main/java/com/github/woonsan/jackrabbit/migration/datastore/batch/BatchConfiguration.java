@@ -16,9 +16,16 @@
  */
 package com.github.woonsan.jackrabbit.migration.datastore.batch;
 
+import java.io.File;
+
 import javax.jcr.RepositoryException;
 
+import org.apache.jackrabbit.core.data.Backend;
+import org.apache.jackrabbit.core.data.CachingDataStoreAccess;
 import org.apache.jackrabbit.core.data.DataRecord;
+import org.apache.jackrabbit.core.data.DataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -38,6 +45,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableBatchProcessing
 @ConfigurationProperties(prefix="batch")
 public class BatchConfiguration {
+
+    private static Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -76,12 +85,33 @@ public class BatchConfiguration {
 
     @Bean
     public DataRecordReader dataRecordReader() throws RepositoryException {
-        return new DataRecordReader(dataStoreFactory.getDataStore(sourceDataStoreConfiguration));
+        final DataStore dataStore = dataStoreFactory.getDataStore(sourceDataStoreConfiguration);
+        return new DataRecordReader(dataStore);
     }
 
     @Bean
     public DataRecordWriter dataRecordWriter() throws RepositoryException {
-        return new DataRecordWriter(dataStoreFactory.getDataStore(targetDataStoreConfiguration));
+        final DataStore dataStore = dataStoreFactory.getDataStore(targetDataStoreConfiguration);
+        final Backend backend = CachingDataStoreAccess.getBackendIfAccessible(dataStore);
+
+        if (!targetDataStoreConfiguration.isDirectBackendAccess() || backend == null) {
+            log.info("Creating DataRecordWriter with DataStore.");
+            return new DataRecordWriter(dataStore);
+        }
+
+        final File backendTempDir;
+        final String homeDir = targetDataStoreConfiguration.getHomeDir();
+
+        if (homeDir == null) {
+            backendTempDir = new File(System.getProperty("java.io.tmpdir"));
+        } else {
+            backendTempDir = new File(homeDir + "/repository/datastore/tmp");
+            backendTempDir.mkdirs();
+        }
+
+        log.info("Creating DataRecordWriter with direct Backend access and temp dir at '{}'.",
+                backendTempDir.getAbsolutePath());
+        return new DataRecordWriter(backend, backendTempDir);
     }
 
     @Bean
