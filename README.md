@@ -35,16 +35,11 @@ you may pass those as command line arguments that start with `--sysprop.` like t
 
 ```sh
 $ java -jar target/jackrabbit-datastore-migration-x.x.x.jar \
-    --sysprop.ds.digest.algorithm=SHA-1 \
+    --sysprop.example.prop1=value1 \
     ...
 ```
 
-In the above example, it results in the same effect that `System.setProperty("ds.digest.algorithm", "SHA-1")`.
-
-By the way, you don't have to set the `ds.digest.algorithm` property ("SHA-256" by default)
-if your DataStore has been used with Apache Jackrabbit 2.16.0 or higher.
-
-See the "Incompatible DataIdentifiers between Apache Jackrabbit Versions" section below for detail.
+In the above example, it results in the same effect that `System.setProperty("example.prop1", "value1")`.
 
 ### Example: FileDataStore to FileDataStore
 
