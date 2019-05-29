@@ -92,7 +92,7 @@ public class BatchConfiguration {
     @Bean
     public DataRecordWriter dataRecordWriter() throws RepositoryException {
         final DataStore dataStore = dataStoreFactory.getDataStore(targetDataStoreConfiguration);
-        final Backend backend = CachingDataStoreAccess.getBackendIfAccessible(dataStore);
+        final Backend backend = CachingDataStoreAccess.getBackend(dataStore);
 
         if (!targetDataStoreConfiguration.isDirectBackendAccess() || backend == null) {
             log.info("Creating DataRecordWriter with DataStore.");

@@ -25,13 +25,13 @@ public final class CachingDataStoreAccess {
     }
 
     /**
-     * Return the {@link Backend} object if accessible, or {@code null} otherwise.
+     * Return the {@link Backend} object.
      * @param dataStore the {@link DataStore} object.
-     * @return the {@link Backend} object if accessible, or {@code null} otherwise
+     * @return the {@link Backend} object
      */
-    public static final Backend getBackendIfAccessible(final DataStore dataStore) {
+    public static final Backend getBackend(final DataStore dataStore) {
         if (dataStore instanceof CachingDataStore) {
-            return ((CachingDataStore) dataStore).backend;
+            return ((CachingDataStore) dataStore).getBackend();
         }
 
         return null;
