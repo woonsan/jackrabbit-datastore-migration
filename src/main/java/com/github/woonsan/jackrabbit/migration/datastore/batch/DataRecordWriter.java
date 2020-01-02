@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -28,6 +30,7 @@ import org.apache.jackrabbit.core.data.Backend;
 import org.apache.jackrabbit.core.data.DataIdentifier;
 import org.apache.jackrabbit.core.data.DataRecord;
 import org.apache.jackrabbit.core.data.DataStore;
+import org.apache.jackrabbit.core.data.DataStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
@@ -46,38 +49,68 @@ public class DataRecordWriter implements ItemWriter<DataRecord> {
 
     private final File backendTempDir;
 
-    public DataRecordWriter(final DataStore dataStore) {
+    // Note: Initializing a large set here is cheaper than thrashing memory.
+    // This is a cache and subject to sync problems, but DataStores are resilient to this.
+    // Items are not removed during normal operations, and any false cache misses will only
+    // result in a minor increase in migration time for that item.
+    private final Set<DataIdentifier> existingIds = new HashSet<>(25000);
+
+    public DataRecordWriter(final DataStore dataStore) throws DataStoreException {
         this.dataStore = dataStore;
         this.backend = null;
         this.backendTempDir = null;
+
+        log.info("Computing new Identifiers with ds.digest.algorithm {}", 
+            System.getProperty("ds.digest.algorithm", "SHA-256"));
+
+        // Initialize during constructor, because write() can be called in parallel
+        log.info("Initializing list of existing IDs at target");
+        dataStore.getAllIdentifiers().forEachRemaining(existingIds::add);
     }
 
-    public DataRecordWriter(final Backend backend, final File backendTempDir) {
+    public DataRecordWriter(final Backend backend, final File backendTempDir) throws DataStoreException {
         this.dataStore = null;
         this.backend = backend;
         this.backendTempDir = backendTempDir;
+
+        log.info("Reusing existing Identifiers (regardless of current ds.digest.algorithm)");
+
+        // Initialize during constructor, because write() can be called in parallel
+        log.info("Initializing list of existing IDs at target");
+        backend.getAllIdentifiers().forEachRemaining(existingIds::add);
     }
 
     @Override
     public void write(List<? extends DataRecord> items) throws Exception {
+
         for (DataRecord record : items) {
             final DataIdentifier identifier = record.getIdentifier();
-
-            try {
-                final long recordLength;
-
-                if (backend == null) {
-                    recordLength = addRecordThroughDataStore(record);
-                } else {
-                    recordLength = addRecordThroughBackend(identifier, record);
-                }
-
-                executionStates.reportWriteSize(identifier, recordLength);
+            boolean exists = existingIds.contains(identifier);
+            if (exists) {
+                // an item with this ID already exists at the target, so optimize by not adding it again
                 executionStates.reportWriteSuccess(identifier);
-                log.info("Record migrated: '{}' ({}%ile)", identifier,
+                log.info("Existing item: '{}' ({}%ile)", record.getIdentifier(),
                         String.format("%2.1f", 100.0 * executionStates.getWriteProgress()));
-            } catch (Exception e) {
-                executionStates.reportWriteError(identifier, e.toString());
+            }
+            else {
+                // an item with this ID doesn't exist at the target yet, so add it
+                try {
+                    final long recordLength;
+
+                    if (backend == null) {
+                        recordLength = addRecordThroughDataStore(record);
+                    } else {
+                        // use backend.write() instead of addRecord() to preserve ID across hash algo changes
+                        recordLength = addRecordThroughBackend(identifier, record);
+                    }
+
+                    executionStates.reportWriteSize(identifier, recordLength);
+                    executionStates.reportWriteSuccess(identifier);
+                    log.info("Record migrated: '{}' ({}%ile)", identifier,
+                            String.format("%2.1f", 100.0 * executionStates.getWriteProgress()));
+                } catch (Exception e) {
+                    executionStates.reportWriteError(identifier, e.toString());
+                }
             }
         }
     }
