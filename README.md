@@ -14,6 +14,8 @@ Also my experience with this tool is shared in http://woonsanko.blogspot.com/201
 This tool has been implemented with **Spring Boot** and **Spring Batch**.
 So, it follows most of the standard conventions established by those projects.
 
+See [CHANGES.md](CHANGES.md) for the updates.
+
 ## How to Build
 
 First, download the latest source release form https://github.com/woonsan/jackrabbit-datastore-migration/releases.
